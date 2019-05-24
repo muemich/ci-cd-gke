@@ -2,35 +2,43 @@ workflow "Build and Deploy" {
   on = "push"
   resolves = [
     "Verify GKE deployment",
-  ] 
+  ]
 }
 
-# Build
+# Build	
 
 action "Build Docker image" {
   uses = "actions/docker/cli@master"
   args = ["build", "-t", "gcloud-example-app", "."]
 }
 
-# Deploy Filter
+# Deploy Filter	
 action "Deploy branch filter" {
   needs = ["Set Credential Helper for Docker"]
   uses = "actions/bin/filter@master"
   args = "branch master"
 }
 
-# GKE
+# GKE	
 
 action "Setup Google Cloud" {
   uses = "actions/gcloud/auth@master"
   secrets = ["GCLOUD_AUTH"]
+
+  # Build	
+
+  # GKE	
+
+  # Build	
+
+  # GKE	
 }
 
 action "Tag image for GCR" {
   needs = ["Setup Google Cloud", "Build Docker image"]
   uses = "actions/docker/tag@master"
   env = {
-    PROJECT_ID = "fifth-byte-211221"
+    PROJECT_ID = "michaels-stuff"
     APPLICATION_NAME = "gcloud-example-app"
   }
   args = ["gcloud-example-app", "gcr.io/$PROJECT_ID/$APPLICATION_NAME"]
@@ -47,7 +55,7 @@ action "Push image to GCR" {
   uses = "actions/gcloud/cli@master"
   runs = "sh -c"
   env = {
-    PROJECT_ID = "fifth-byte-211221"
+    PROJECT_ID = "michaels-stuff"
     APPLICATION_NAME = "gcloud-example-app"
   }
   args = ["docker push gcr.io/$PROJECT_ID/$APPLICATION_NAME"]
@@ -57,18 +65,18 @@ action "Load GKE kube credentials" {
   needs = ["Setup Google Cloud", "Push image to GCR"]
   uses = "actions/gcloud/cli@master"
   env = {
-    PROJECT_ID = "fifth-byte-211221"
-    CLUSTER_NAME = "workflow-example-cluster"
+    PROJECT_ID = "michaels-stuff"
+    CLUSTER_NAME = "standard-cluster-1"
   }
-  args = "container clusters get-credentials $CLUSTER_NAME --zone us-central1-a --project $PROJECT_ID"
+  args = "container clusters get-credentials $CLUSTER_NAME --zone europe-west3-a --project $PROJECT_ID"
 }
 
-# TODO Add Action to start GitHub Deploy
+# TODO Add Action to start GitHub Deploy	
 action "Deploy to GKE" {
   needs = ["Push image to GCR", "Load GKE kube credentials"]
   uses = "docker://gcr.io/cloud-builders/kubectl"
   env = {
-    PROJECT_ID = "fifth-byte-211221"
+    PROJECT_ID = "michaels-stuff"
     APPLICATION_NAME = "gcloud-example-app"
     DEPLOYMENT_NAME = "app-example"
   }
