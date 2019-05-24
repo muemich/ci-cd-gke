@@ -68,7 +68,7 @@ action "Load GKE kube credentials" {
     PROJECT_ID = "michaels-stuff"
     CLUSTER_NAME = "standard-cluster-1"
   }
-  args = "container clusters get-credentials $CLUSTER_NAME --zone us-central1-a --project $PROJECT_ID"
+  args = "container clusters get-credentials $CLUSTER_NAME --zone europe-west3-a --project $PROJECT_ID"
 }
 
 # TODO Add Action to start GitHub Deploy	
