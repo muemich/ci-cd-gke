@@ -28,6 +28,10 @@ action "Setup Google Cloud" {
   # Build	
 
   # GKE	
+
+  # Build	
+
+  # GKE	
 }
 
 action "Tag image for GCR" {
